@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Version #1 (Search - Straight Line - Vanish) -->
+
+<style>
+    html,
+    body {
+        background-color: #fff;
+    }
+
+    span,
+    .select2-results .select2-result-label {
+        font-family: sans-serif;
+    }
+
+    #expandUpButton {
+        background-color: #5897fb
+    }
+
+    #expandDownButton {
+        background-color: #5cb85c
+    }
+
+    button {
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        display: inline-block;
+        cursor: pointer;
+        color: #ffffff;
+        border-color: transparent;
+        font-family: Arial;
+        font-size: 12px;
+        padding: 8px;
+        margin: 0 10px 0 0;
+        text-decoration: none;
+        transition-duration: 0.4s;
+    }
+
+    button:hover {
+        transform: scale(1.1);
+        transition-timing-function: cubic-bezier(.17,.67,.83,.67);
+        border-radius: 4px;
+        border: 1px solid transparent;
+    }
+
+    button:active {
+        position: relative;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+    #main-container {
+        padding: 10px;
+    }
+
+    #expandDownButton {
+        display: flex;
+    }
+
+    #expandUpButton {
+        display: flex;
+    }
+
+    #buttonContainer {
+        display: inline-flex;
+    }
+
+    #block_container {
+        display: grid;
+    }
+
+    h1 {
+        font-family: sans-serif;
+    }
+
+    .selectedText {
+        fill: #666 ! important;
+        stroke: #000 ! important;
+    }
+
+    circle:hover {
+        fill: #449d44 ! important;
+        stroke: #449d44 ! important;
+    }
+
+    .node {
+        cursor: pointer;
+    }
+
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+
+    .node text {
+        font-family: Helvetica, Sans-Serif;
+        font-size: 12px;
+        fill: #000;
+    }
+
+    .link {
+        fill: none;
+        stroke: #ddd;
+        stroke-width: 1.5px;
+    }
+
+    .found {
+        fill: #ff4136;
+        stroke: #ff4136;
+    }
+
+    .search {
+        float: left;
+        font: 12px sans-serif;
+        width: 30%;
+    }
+</style>
+</style>
+
+<body>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.css">
+    </link>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
+
+    <div id="main-container">
+        <h1>D3.js Node Tree Search With Straight Line Isolation</h1>
+        <div id="block_container">
+            <div id="searchName"></div>
+            <br>
+            <div id="buttonContainer">
+                <button id="expandUpButton" onclick="expandUp()">Expand All</button>
+                <button id="expandDownButton" onclick="collapseDown()">Collapse All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <script>
+        var margin = { top: 20, right: 120, bottom: 20, left: 120 },
+            width = 960 - margin.right - margin.left,
+            height = 800 - margin.top - margin.bottom;
+        var i = 0,
+            duration = 750,
+            root;
+        var tree = d3.layout.tree()
+            .size([height, width]);
+        var diagonal = d3.svg.diagonal()
+            .projection(function (d) { return [d.y, d.x]; });
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var childrenToHide = [];
+
+        //===============================================
+        function select2DataCollectName(d) {
+            if (d.children)
+                d.children.forEach(select2DataCollectName);
+            else if (d._children)
+                d._children.forEach(select2DataCollectName);
+            select2Data.push(d.name);
+        }
+
+        //===============================================
+        function searchTree(d) {
+            if (d.children) {
+                d.children.forEach(searchTree);
+            } else if (d._children) {
+                d._children.forEach(searchTree);
+            }
+            var searchFieldValue = eval(searchField);
+            if (searchFieldValue && searchFieldValue.match(searchText)) {
+                // Walk parent chain
+                var ancestors = [];
+                var parent = d;
+                // debugger;
+                while (typeof (parent) !== "undefined") {
+                    ancestors.push(parent);
+                    parent.class = "found";
+                    parent = parent.parent;
+                }
+                d3.selectAll("text").attr("dy", "-1.35em");
+            }
+        }
+
+        //===============================================
+        function clearAll(d) {
+            d.class = "";
+            if (d.children)
+                d.children.forEach(clearAll);
+            else if (d._children)
+                d._children.forEach(clearAll);
+        }
+
+        //===============================================
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(collapse);
+                d.children = null;
+            }
+        }
+
+        //===============================================
+        function expandEverything(d) {
+            var children = (d.children) ? d.children : d._children;
+            if (d._children) {
+                d.children = d._children;
+                d._children = null;
+            }
+            if (children)
+                children.forEach(expandEverything);
+        }
+
+        //===============================================
+        function expandUp() {
+            expandEverything(root);
+            update(root);
+        }
+
+        //===============================================
+        function collapseDown() {
+            root.children.forEach(collapse);
+            collapse(root);
+            update(root);
+        }
+
+        //===============================================
+        function simpleSearch(d) {
+            if (d.children) {
+                if (d.class !== "found") {
+                    d._children = d.children;
+                    d._children.forEach(collapseAllNotFound);
+                    d.children = null;
+                } else
+                    d.children.forEach(collapseAllNotFound);
+            }
+        }
+
+        //===============================================
+        function collapseAllNotFound(d) {
+            if (d.children) {
+
+                if (d.class !== "found") {
+                    d._children = d.children;
+                    d._children.forEach(collapseAllNotFound);
+                    d.children = null;
+
+                    childrenToHide.push(d);
+                } else {
+                    d.children.forEach(collapseAllNotFound);
+                }
+            }
+            else {
+                if (d.class !== "found" && d.parent.class === "found") {
+                    childrenToHide.push(d);
+                }
+            }
+        }
+
+        //===============================================
+        function resetTree(d) {
+            if (d.children) {
+                if (d._children) {
+                    d._children = d._children.concat(d.children);
+                }
+                else {
+                    d._children = d.children
+                }
+                d.children = undefined;
+                d._children.forEach(resetTree);
+            }
+            else if (d._children) {
+                d._children.forEach(resetTree);
+            }
+            if (d.children)
+                d.children.sort(sortChildren);
+            if (d._children)
+                d._children.sort(sortChildren);
+        }
+
+        //===============================================
+        function sortChildren(a, b) {
+            // TODO: This function needs to sort upper and lower case.
+            if (a.name < b.name) { return -1; }
+            if (a.name > b.name) { return 1; }
+            return 0;
+        }
+
+        //===============================================
+        function expandAll(d) {
+            if (d._children) {
+                d.children = d._children;
+                d.children.forEach(expandAll);
+                d._children = null;
+            } else if (d.children)
+                d.children.forEach(expandAll);
+        }
+
+        //===============================================
+        function toggle(d) {
+            var circleTest = $(childrenToHide).hasClass("found");
+            childrenToHide = [];
+            if (d.class === "found") {
+                clearAll(root);
+                expandAll(root);
+                update(root);
+                searchField = "d.name";
+                searchText = $(".select2-chosen").text();
+                searchTree(root);
+                root.children.forEach(simpleSearch);
+                update(root);
+                childrenToHide.class = "";
+                d.class = "";
+                parent.class = "";
+                d.parent.class = "";
+                parent.parent.class = "";
+                d.children.class = "";
+                d3.selectAll("circle").attr("class", "");
+                d3.selectAll("text").attr("dy", "0.35em");
+            } else if (d.class !== "found") {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                clearAll(root);
+                update(d);
+                $("#searchName").select2("val", "");
+            }
+        }
+
+        //===============================================
+        $("#searchName").on("select2-selecting", function (e) {
+            childrenToHide = [];
+            clearAll(root);
+            expandAll(root);
+            update(root);
+            searchField = "d.name";
+            searchText = e.object.text;
+            searchTree(root);
+            root.children.forEach(collapseAllNotFound);
+            for (var index in childrenToHide) {
+                d3.selectAll("circle").attr("class", "");
+                var d = childrenToHide[index];
+                children = childrenToHide;
+                if (d.parent.children) {
+                    d.parent.children.splice(d.parent.children.indexOf(d), 1);
+                }
+                if (d.parent._children && !d.parent._children.includes(d)) {
+                    d.parent._children.push(d);
+                }
+                else if (!d.parent._children) {
+                    d.parent._children = [d];
+                }
+            }
+            childrenToHide = [];
+            update(root);
+            resetTree(root);
+        });
+
+        d3.json("flare-long.json", function (error, flare) {
+            root = flare;
+            root.x0 = height / 2;
+            root.y0 = 0;
+
+            select2Data = [];
+            select2DataCollectName(root);
+            select2DataObject = [];
+            select2Data.sort(function (a, b) {
+                if (a > b) return 1; // sort
+                if (a < b) return -1;
+                return 0;
+            })
+                .filter(function (item, i, ar) {
+                    return ar.indexOf(item) === i;
+                }) // remove duplicate items
+                .filter(function (item, i, ar) {
+                    select2DataObject.push({
+                        "id": i,
+                        "text": item
+                    });
+                });
+            $("#searchName").select2({
+                data: select2DataObject,
+                containerCssClass: "search",
+                placeholder: "Search for a term..."
+            });
+
+            function collapse(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d._children.forEach(collapse);
+                    d.children = null;
+                }
+            }
+            root.children.forEach(collapse);
+            root.children.forEach(function (d) { d.hidden = false; });
+            root.hidden = false;
+            update(root);
+        });
+
+        d3.select(self.frameElement).style("height", "800px");
+
+        //=============================================================================================================================================
+        function update(source) {
+
+            // Compute the new tree layout.
+            var nodes = tree.nodes(root).reverse(),
+                links = tree.links(nodes);
+
+            // Normalize for fixed-depth.
+            nodes.forEach(function (d) { d.y = d.depth * 180; });
+
+            // Update the nodes
+            var node = svg.selectAll("g.node")
+                .data(nodes, function (d) { return d.id || (d.id = ++i); });
+
+            // Enter any new nodes at the parent's previous position.
+            var nodeEnter = node.enter().append("g")
+                .attr("class", "node test1")
+                .attr("transform", function (d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
+                .on("click", toggle);
+
+            nodeEnter.append("circle")
+                .attr("r", 1e-6)
+                .style("fill", function (d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+            // Possible use in the future.  Needs adjustable width based on text.
+            // nodeEnter.append("rect")
+            //     .attr("rx", 6)
+            //     .attr("ry", 6)
+            //     .attr("x", function (d) { return d.children || d._children ? -140 : -10; })
+            //     .attr('y', -10)
+            //     .attr("width", 150)
+            //     .attr("height", 20)
+            //     .style("fill", "#fff")
+            //     .style("opacity", 0.2)
+            //     .style("border-radius", "5px");
+
+            nodeEnter.append("text")
+                .attr("x", function (d) { return d.children || d._children ? -10 : 10; })
+                .attr("dy", ".35em")
+                .attr("text-anchor", function (d) { return d.children || d._children ? "end" : "start"; })
+                .text(function (d) { return d.name; })
+                .style("fill-opacity", 1e-6)
+                .style("font-family", "Helvetica, Sans-Serif")
+                .style("font-size", "12px")
+                .style("fill", "#000");
+
+            // Transition nodes to their new position.
+            var nodeUpdate = node.transition()
+                .duration(duration)
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+
+            nodeUpdate.select("circle")
+                .attr("r", 4.5)
+                .style("fill", function (d) {
+                    if (d.class === "found") {
+                        return "#ff4136"; //red
+                    } else if (d._children) {
+                        return "lightsteelblue";
+                    } else {
+                        return "#fff";
+                    }
+                })
+                .style("stroke", function (d) {
+                    if (d.class === "found") {
+                        return "#ff4136"; //red
+                    }
+                })
+                .style("stroke-width", "1.5px");
+
+            nodeUpdate.select("text")
+                .style("fill-opacity", 1);
+
+            // Transition exiting nodes to the parent's new position.
+            var nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("class", "test3")
+                .attr("transform", function (d) {
+                    return "translate(" + source.y + "," + source.x + ")";
+                })
+                .remove();
+
+            nodeExit.select("circle")
+                .attr("r", 1e-6)
+                .style("stroke", "steelblue")
+                .style("stroke-width", "1.5px");
+            // TODO: Styling is not good when nodes collapse.
+
+            nodeExit.select("text")
+                .style("fill-opacity", 1e-6);
+
+            // Update the links
+            var link = svg.selectAll("path.link")
+                .data(links, function (d) { return d.target.id; });
+
+            // Enter any new links at the parent's previous position.
+            link.enter().insert("path", "g")
+                .attr("class", "link")
+                .attr("d", function (d) {
+                    var o = { x: source.x0, y: source.y0 };
+                    return diagonal({ source: o, target: o });
+                });
+
+            // Transition links to their new position.
+            link.transition()
+                .duration(duration)
+                .attr("d", diagonal)
+                .style("stroke", function (d) {
+                    if (d.target.class === "found") {
+                        return "#ff4136";
+                    }
+                });
+
+            // Transition exiting nodes to the parent's new position.
+            link.exit().transition()
+                .duration(duration)
+                .attr("d", function (d) {
+                    var o = { x: source.x, y: source.y };
+                    return diagonal({ source: o, target: o });
+                })
+                .remove();
+
+            // Stash the old positions for transition.
+            nodes.forEach(function (d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        }
+
+    </script>
+
+    </html>

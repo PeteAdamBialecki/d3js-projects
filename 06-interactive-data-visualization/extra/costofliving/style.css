@@ -1,0 +1,44 @@
+
+#content {
+    font-family: Open Sans;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.title {
+    font-weight: 800;
+    font-size: 24px;
+}
+.subtitle {
+    font-weight: 800;
+    font-size: 18px;
+}
+.linktitle {
+    font-weight: 800;
+    font-size: 28px;
+    text-align:center;
+}
+
+
+
+.section {
+    margin-bottom: 100px;
+    padding: 20px;
+}
+
+.code {
+    font-family: Courier New;
+    width: 750px;
+    background-color: #efefef;
+    padding: 5px;
+}
+
+a.example{ 
+    font-weight: 800;
+}
+
+iframe {
+    overflow: hidden;
+}

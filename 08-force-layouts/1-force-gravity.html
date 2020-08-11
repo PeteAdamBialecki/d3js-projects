@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!-- <script src="d3.v4.min.js" charset="utf-8"></script> -->
+    <script src="d3.v3.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+</head>
+<style>
+    body { 
+        background: #444;
+    }
+    .node {
+        fill: rgb(103, 58, 58);
+        stroke: #000;
+        stroke-width: 2px;
+    }
+    path.link {
+        stroke: #777;
+        stroke-width: 2px;
+        fill: none;
+    }
+    h1, h4 {
+        padding: 10px;
+        font-family: sans-serif;
+    }
+</style>
+<body>
+    <h4>Gravity = <span id="sliderLabelGravity">0.1</span><br><input type="range" value="0.1" min="0" max="1" onchange="forceUpdate(this.value)" step="0.1">
+    </h4>
+    <h4>Charge = <span id="sliderLabelCharge">1000</span><br><input type="range" value="1000" min="-500000" max="50000" onchange="forceUpdateCharge(this.value)" step="100">
+    </h4>
+    <div class="chart-wrapper" id="chart-line1"></div>
+    <script type="text/javascript">
+// For link distance with URL
+        // var param = document.URL.split("#")[1] || 200;
+        // var header = d3.select('body').append("h1")
+        //                 .html("linkDistance(" + param + ")")
+        //                 .style("text-align", "center");
+// For link rigidity
+        var strength = document.URL.split("#")[1] || 1;
+        var header = d3.select('body').append("h1")
+                        .html("linkStrength(" + strength + ")")
+                        .style("text-align", "center");
+        var margin = 0.8, 
+            width = window.innerWidth*margin,
+            height = window.innerWidth*margin;
+        var nodes = [
+            {name: 'Alice'},
+            {name: 'Chris'},
+            {name: 'Phil'}
+        ];
+        var links = [
+            {source: 0, target: 1, distance: 100},
+            {source: 1, target: 2, distance: 200},
+            {source: 2, target: 0, distance: 300}
+        ];
+        var svg = d3.select('body').append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+        // var path = svg.append("svg:g").selectAll("path")
+        //                 .data(links)
+        //                 .enter()
+        //                 .append("svg:path")
+        //                 .attr("class", "link");
+        var node = svg.selectAll('.node')
+                        .data(nodes)
+                        .enter().append('circle')
+                        .attr('class', 'node')
+                        ;
+        // var link = svg.selectAll('.link')
+        //                 .data(links)
+        //                 .enter()
+        //                 .append('line')
+        //                 .attr('class', 'link');
+// For uneven distance between links
+        // var force = d3.layout.force()
+        //                 .size([width, height])
+        //                 .nodes(nodes)
+        //                 .links(links)
+        //                 .on("tick", tick)
+        //                 .linkDistance(function(d) { return d.distance;})
+        //                 .start();
+// For changing the distance between links with URL
+        var force = d3.layout.force()
+                        .size([width, height])
+                        .nodes(nodes)
+                        .links(links)
+                        .on("tick", tick)
+// Switch with "param" for linkDistance to work with URL and link distance.
+                        .gravity(0.1)
+                        .charge(30)
+                        .linkDistance(width/3)
+                        .linkStrength(strength)
+                        .start();
+        svg.append("svg:defs").selectAll("marker")
+                        .data(["end"])
+                        .enter().append("svg:marker")
+                        .attr("id", String)
+                        .attr("viewBox", "0 -5 10 10")
+                        .attr("refX", 10) //play with these to adjust location
+                        .attr("refY", -0.5)
+                        .attr("markerWidth", 6)
+                        .attr("markerHeight", 6)
+                        .attr("orient", "auto")
+                        .attr("fill", "#404040")
+                        .append("svg:path")
+                        .attr("d", "M0,-5L10,0L0,5");
+        var path = svg.append("svg:g").selectAll("path")
+                        .data(force.links())
+                        .enter().append("svg:path")
+                        .attr("class", "link")
+                        .attr("marker-end", "url(#end)");
+        function tick(e) {
+            node.attr('r', width * 0.05)
+                .attr('cx', function(d) { return d.x; })
+                .attr('cy', function(d) { return d.y; })
+                .call(force.drag) //let them be dragged around
+                ;
+            path.attr("d", function(d, i) {
+                    
+                    //setup the source and target points
+        var dx = d.target.x - d.source.x, 
+            dy = d.target.y - d.source.y,
+            dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" +
+            d.source.x + "," +
+            d.source.y + "A" +
+            dr + "," + dr + " 0 0,1 " +
+            d.target.x + "," +
+            d.target.y;
+    });
+}
+function forceUpdateGravity(val) {
+    d3.select("#sliderLabelGravity").text(val);
+    force.gravity(val);
+    force.start();
+}
+function forceUpdateCharge(val) {
+    d3.select("#sliderLabelCharge").text(val);
+    force.charge(val);
+    force.start();
+}
+</script>
+</body>
+</html>

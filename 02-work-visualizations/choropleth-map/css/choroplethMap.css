@@ -1,0 +1,12 @@
+.d3-map-animation {
+    transform-origin: center;
+    -webkit-transition: perspective(1px) translateZ(0);
+    -webkit-transform: scale(1);
+    -ms-transition: all 200ms ease-in-out;
+    -ms-transform: scale(1);
+    -moz-transition: all 200ms ease-in-out;
+    -moz-transform: scale(1);
+    transition: all 200ms ease-in;
+    -webkit-transition-duration: 0.5s;
+    transition-duration: 0.1s;
+}

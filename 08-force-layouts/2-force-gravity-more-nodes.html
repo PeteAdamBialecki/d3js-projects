@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!-- <script src="d3.v4.min.js" charset="utf-8"></script> -->
+    <script src="d3.v3.js" charset="utf-8"></script>
+</head>
+<style>
+    body { 
+        background: #444;
+    }
+    .node {
+        fill: rgb(103, 58, 58);
+        stroke: #000;
+        stroke-width: 2px;
+    }
+    .link {
+        stroke: #777;
+        stroke-width: 2px;
+    }
+    path.link {
+        stroke: #777;
+        stroke-width: 2px;
+        fill: none;
+    }
+    h1, h4 {
+        padding: 10px;
+        font-family: sans-serif;
+    }
+</style>
+<body>
+    <div class="chart-wrapper" id="chart-line1"></div>
+    <script type="text/javascript">
+var margin = 0.8,
+    width = window.innerWidth*margin,
+    height = window.innerHeight*margin;
+
+// pull in data
+d3.csv("battles.csv", function(error, links) {
+
+
+    // create empty nodes array
+    var nodes = {};
+    
+    // compute nodes from links data
+    links.forEach(function(link) {
+        link.source = nodes[link.source] ||
+            (nodes[link.source] = {name: link.source});
+        link.target = nodes[link.target] ||
+            (nodes[link.target] = {name: link.target});
+        link.value = +link.value;        
+    });
+
+
+    // log to console for debugging
+    console.log(JSON.stringify(links, null, 4));
+    console.log('nodes:');
+    console.log(JSON.stringify(nodes, null, 4));
+    
+    // add a SVG to the body for our viz
+    var svg=d3.select('body').append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    // use the force
+    var force = d3.layout.force()
+        .size([width, height])
+        .nodes(d3.values(nodes))
+        .links(links)
+        .on("tick", tick)
+        .linkDistance(100)
+        .charge(-300)
+        .start();
+
+    // setup link definition
+    var link = svg.selectAll('.link')
+        .data(links)
+        .enter().append('line')
+        .attr('class', 'link'); 
+
+    // setup node definition
+    var node = svg.selectAll('.node')
+        .data(force.nodes())
+        .enter().append('circle')
+        .attr('class', 'node');
+   
+
+
+    // tick function to create curved lines and move things around    
+    function tick(e) {
+        
+        node.attr('r', width * 0.01)
+            .attr('cx', function(d) { return d.x; })
+            .attr('cy', function(d) { return d.y; })
+            .call(force.drag);
+            
+        link.attr('x1', function(d) { return d.source.x; })
+            .attr('y1', function(d) { return d.source.y; })
+            .attr('x2', function(d) { return d.target.x; })
+            .attr('y2', function(d) { return d.target.y; });
+        
+    }
+    
+    
+});
+</script>
+</body>
+</html>

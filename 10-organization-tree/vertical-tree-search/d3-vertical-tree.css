@@ -1,0 +1,122 @@
+	.node rect {
+	    cursor: pointer;
+	    fill: #fff;
+	    fill-opacity: .8;
+	    stroke: #444;
+	    stroke-width: 1.5px;
+	}
+
+	.node text {
+	    font: 10px sans-serif;
+	    pointer-events: none;
+	}
+
+	path.link {
+	    fill: none;
+	    stroke: #888;
+	    stroke-width: 1.5px;
+	}
+
+	.indented-tree-controls {
+	    width: 100%;
+	    border: 1px solid #ccc;
+	    border-radius: 4px;
+	}
+
+	.indented-tree-container {
+	    width: 250px;
+	    height: 0px;
+	    display: inline-flex;
+	    -webkit-transition: all 0.6s ease;
+	    -moz-transition: all 0.6s ease;
+	    -o-transition: all 0.6s ease;
+	    transition: all 0.6s ease;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
+	}
+
+	.indented-vertical-tree {
+	    position: inherit;
+	}
+
+	.modal-body .form-vertical .form-group {
+	    width: 100%;
+	}
+
+	.indented-tree-buttons {
+	    display: inline;
+	    float: right;
+	}
+
+	.indented-tree-buttons i {
+	    color: #444;
+	}
+
+	.indented-tree-buttons .btn {
+	    margin: 0;
+	    padding: 10px 0 5px 5px;
+	}
+
+	.active {
+	    opacity: 0.25;
+	    cursor: default;
+	    display: none;
+	}
+
+	.indented-tree-controls .btn-group .active, .indented-tree-controls .btn-group .active a {
+	    color: #000;
+	    background: none;
+	    box-shadow: none;
+	}
+
+	.btn:active, .btn.active {
+	    -webkit-box-shadow: none;
+	    box-shadow: none;
+	}
+
+	#org_tree_container .indented-tree-label {
+	    display: none;
+	}
+
+	.indented-tree {
+	    display: grid;
+	}
+
+	.indented-vertical-tree {
+	    height: 100%;
+	}
+
+	.modal-body .indented-tree-controls, #org_tree_container .indented-tree-controls {
+	    background: #fff;
+	}
+
+	.link {
+	    fill: none;
+	    stroke: #ccc;
+	    stroke-width: 1.5px;
+	}
+
+	.found {
+	    fill: #ff4136;
+	    stroke: #ff4136;
+	}
+
+	#block_container {
+	    display: inline;
+	}
+
+	select {
+	    width: 200px;
+	}
+
+	.custom-container span {
+	    color: blue!important;
+	}
+
+	.custom-dropdown {
+	    color: red;
+	}
+
+	span {
+	    font-family: arial;
+	}

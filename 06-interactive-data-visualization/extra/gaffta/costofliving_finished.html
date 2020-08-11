@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)http://enjalot.github.com/intro-d3/gaffta/costofliving.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <script src="d3.v2.min.js"></script>
+
+    </head>
+
+<body>
+
+  <svg>
+  </svg>
+
+  <script>
+
+    function getData(costofliving) {
+      console.log("data:", costofliving);
+
+      costofliving.forEach(function(d) {
+        d.price = parseFloat(d.price);
+        d.rent = parseFloat(d.rent);
+      });
+
+      var svg = d3.select("svg");
+      var chartHeight = 200;
+
+      function makeBars(data, type, options) {
+        console.log("type:", type);
+        var cx = options.x || 0;
+        var cy = options.y || 0;
+        var chartHeight = options.chartHeight || 200;
+
+        var max = d3.max(data, function(d) {
+          return d[type];
+        });
+        
+        var yscale = d3.scale.linear()
+          .domain([0, max])
+          .range([0, chartHeight]);
+        
+        var rects = svg.selectAll("rect." + type)
+          .data(data)
+          .enter()
+          .append("rect")
+          .classed(type, true);
+
+        rects.attr("width", 2)
+        .attr("height", function(d,i) {
+          return yscale(d[type]);
+        })
+        .attr("transform", function(d,i) {
+          var x = cx + i * 3;
+          var y = cy + chartHeight - yscale(d[type]);
+          return "translate(" + [x,y] + ")";
+        });
+      }
+      makeBars(costofliving, "price", {x: 10, y: 0});
+      makeBars(costofliving, "rent", {x: 10, y: 300})
+      //makeBars(costofliving, "price", {x:10 y:0});
+      //makeBars(costofliving, "rent", {x: 10, y: 300});
+
+
+    }
+
+    var url = "slides/data/costofliving.csv";
+    d3.csv(url, getData);
+
+  </script>
+
+
+
+
+</body></html>

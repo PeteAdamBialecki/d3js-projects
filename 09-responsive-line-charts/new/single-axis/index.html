@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="multiline-new.css">
+    <script src="d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+</head>
+<body>
+
+    <div class="chart-wrapper" id="chart-line1"></div>
+
+    <!-- Linked JavaScript at work -->
+    <!-- <script type="text/javascript" src="<c:url value="/js/libs/d3.v3.js"/>"></script> 
+    <script src="<c:url value="/js/libs/d3v4/d3-scale-chromatic.v1.min.js"/>"></script>
+    <script src="<c:url value="/js/libs/d3v4/topojson.v2.min.js"/>"> </script>
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script> -->
+
+    <script type="text/javascript">
+        d3.csv('multiline_data_days_small.csv', function(error, data) {
+        data.forEach(function (d) {
+            d.day = +d.day;
+            d.cardholdersEnrolled = +d.cardholdersEnrolled;
+            d.cardholdersRegistered = +d.cardholdersRegistered;
+            d.ordersPerDay = +d.ordersPerDay;
+            d.pointsPerDay = +d.pointsPerDay;
+            d.transactionsPerDay = +d.transactionsPerDay;
+            d.pointsEarnedPerDay = +d.pointsEarnedPerDay;
+        });
+        var chart = makeLineChart(data, 'day', {
+            'Enrolled': {column: 'cardholdersEnrolled'},
+            'Registered': {column: 'cardholdersRegistered'},
+            'Orders': { column: 'ordersPerDay' },
+            'Points': { column: 'pointsPerDay' },
+            'Transactions': { column: 'transactionsPerDay' },
+            'Points Earned': { column: 'pointsEarnedPerDay' }
+        }, {xAxis: 'Days', yAxis: 'Amount'});
+        chart.bind("#chart-line1");
+        chart.render();
+    });
+    </script>
+
+<script src="multiline-new.js" charset="utf-8"></script>
+</body>
+</html>
