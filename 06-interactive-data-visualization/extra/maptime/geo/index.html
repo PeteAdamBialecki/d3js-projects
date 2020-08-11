@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700|Ubuntu' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="../../lib/codemirror.css">
+  <link rel="stylesheet" href="../../lib/inlet.css">
+  <link rel="stylesheet" href="../style.css">
+  <script src="../../lib/html5slider.js"></script>
+  <script src="../../lib/codemirror.js"></script>
+  <script src="../../lib/javascript.js"></script>
+  <script src="../../lib/d3.min.js"></script>
+  <script src="../../lib/topojson.v1.min.js"></script>
+  <script src="../../lib/sticker.js"></script>
+  <script src="../../lib/inlet.min.js"></script>
+  <title>d3.geo API</title>
+  <style>
+  .sidebyside .left {
+    width: 60%;
+  }
+  .sidebyside .right {
+    width: 35%;
+  }
+
+  .land {
+    fill: #6FC480;
+    stroke: #000000;
+  }
+
+  circle {
+    fill: #ffffff;
+    stroke: #CC0A48;
+    fill-opacity: 0.2
+  }
+
+  .graticule {
+    fill: none;
+    stroke: #777;
+    stroke-opacity: .5;
+    stroke-width: .5px;
+  }
+  </style>
+</head>
+<body>
+  <div class="header">
+  <a style="float:right;margin-right:20px" href="../">Main Menu</a>
+  <h1>d3.geo API</h1>
+  <ul>
+    <li>
+      <a href="#data">data</a>
+    </li>
+    <li>
+      <a href="#projections">projections</a>
+    </li>
+    <li>
+      <a href="#paths">paths</a>
+    </li>
+    <li>
+      <a href="#graticule">graticule</a>
+    </li>
+    <li>
+      <a href="#points">points</a>
+    </li>
+    <li>
+      <a href="#resources">Resources</a>
+    </li>
+
+  </ul>
+  </div>
+  <div class="container">
+  <div class="content">
+
+  <div name="data" id="data" class="section">
+    <h2>data</h2>
+    <div class="data sidebyside">
+      <div class="left">
+<snippet>
+d3.json("../data/world110.json", function(err, world) {
+  console.log("data", world)
+  var countries = topojson.feature(world, world.objects.land);
+  console.log("countries", countries)
+})
+</snippet>
+        <div class="editor"></div>
+        <p>
+        </p>
+      </div>
+      <div class="right">
+        <svg width="100%" height=175>
+        <text x=50 y=93>Check your console</text>
+        </svg>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var options = {
+        mode: 'javascript',
+        lineNumbers: true,
+        viewportMargin: Infinity,
+      }
+      var editor = d3.select(".data").select(".editor");
+      var svg = d3.select(".data svg");
+      var snippet  = d3.select(".data").select("snippet");
+      var cm = CodeMirror(editor.node(), options);
+      Inlet(cm)
+      var text = snippet.text()
+      cm.on("change", function() {
+        var value = cm.getValue();
+        try {
+          eval(value);
+        } catch(e) {
+         console.log(e)
+        }
+      })
+      cm.setValue(text);
+    }())
+    </script>
+
+
+  <div name="projections" id="projections" class="section">
+    <h2>projections</h2>
+    <div class="projections sidebyside">
+      <div class="left">
+<snippet>
+var width = 420
+var height = 400
+var projection = d3.geo.orthographic()
+//var projection = d3.geo.albers()
+//var projection = d3.geo.mercator()
+  .scale(170)
+  .rotate([100,0,0])
+  .translate([width/2, height/2])
+  .clipAngle(90);
+</snippet>
+        <div class="editor"></div>
+        <p>
+        </p>
+      </div>
+      <div class="right">
+        <svg width="100%" height=400>
+        </svg>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var options = {
+        mode: 'javascript',
+        lineNumbers: true,
+        viewportMargin: Infinity,
+      }
+      var editor = d3.select(".projections").select(".editor");
+      var svg = d3.select(".projections svg");
+      var cm = CodeMirror(editor.node(), options);
+      Inlet(cm)
+      var snippet  = d3.select(".projections").select("snippet");
+      var text = snippet.text()
+      d3.json("../data/world110.json", function(err, world) {
+        cm.on("change", function() {
+          svg.selectAll("*").remove()
+          var value = cm.getValue();
+          try {
+              var countries = topojson.feature(world, world.objects.land);
+              eval(value);
+              var path = d3.geo.path()
+                .projection(projection);
+              var graticule = d3.geo.graticule()
+              svg.append("path")
+                  .datum(graticule)
+                  .attr("class", "graticule")
+                  .attr("d", path);
+              svg.append("path")
+              .attr("d", path(countries))
+              .classed("land", true);
+          } catch(e) {
+           console.log(e)
+          }
+        })
+        cm.setValue(text);
+      })
+    }())
+    </script>
+
+  
+  <div name="paths" id="paths" class="section">
+    <h2>paths</h2>
+    <div class="paths sidebyside">
+      <div class="left">
+<snippet>
+var path = d3.geo.path()
+  .projection(projection);
+
+svg.append("path")
+  .attr("d", path(countries))
+  .classed("land", true);
+</snippet>
+        <div class="editor"></div>
+        <p>
+        </p>
+      </div>
+      <div class="right">
+        <svg width="100%" height=400>
+        </svg>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var options = {
+        mode: 'javascript',
+        lineNumbers: true,
+        viewportMargin: Infinity,
+      }
+      var editor = d3.select(".paths").select(".editor");
+      var svg = d3.select(".paths svg");
+      var cm = CodeMirror(editor.node(), options);
+      Inlet(cm)
+      var snippet  = d3.select(".paths").select("snippet");
+      var text = snippet.text()
+
+      // todo make this live bound
+      var projection = d3.select(".projections").select("snippet").text()
+
+      d3.json("../data/world110.json", function(err, world) {
+        cm.on("change", function() {
+          svg.selectAll("*").remove()
+          var value = cm.getValue();
+          try {
+              var countries = topojson.feature(world, world.objects.land);
+              eval(projection)
+
+              var path = d3.geo.path()
+                .projection(projection);
+              eval(value);
+          } catch(e) {
+           console.log(e)
+          }
+        })
+        cm.setValue(text);
+      })
+    }())
+    </script>
+  </div>
+
+
+  <div name="graticule" id="graticule" class="section">
+    <h2>graticule</h2>
+    <div class="graticule sidebyside">
+      <div class="left">
+<snippet>
+var path = d3.geo.path()
+  .projection(projection);
+
+var graticule = d3.geo.graticule()
+svg.append("path")
+  .datum(graticule)
+  .attr("class", "graticule")
+  .attr("d", path);
+</snippet>
+        <div class="editor"></div>
+        <p>
+        </p>
+      </div>
+      <div class="right">
+        <svg width="100%" height=400>
+        </svg>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var options = {
+        mode: 'javascript',
+        lineNumbers: true,
+        viewportMargin: Infinity,
+      }
+      var editor = d3.select(".graticule").select(".editor");
+      var svg = d3.select(".graticule svg");
+      var cm = CodeMirror(editor.node(), options);
+      Inlet(cm)
+      var snippet  = d3.select(".graticule").select("snippet");
+      var text = snippet.text()
+
+      // todo make this live bound
+      var projection = d3.select(".projections").select("snippet").text()
+
+      d3.json("../data/world110.json", function(err, world) {
+        cm.on("change", function() {
+          svg.selectAll("*").remove()
+          var value = cm.getValue();
+          try {
+              var countries = topojson.feature(world, world.objects.land);
+              eval(projection)
+              eval(value);
+          } catch(e) {
+           console.log(e)
+          }
+        })
+        cm.setValue(text);
+      })
+    }())
+    </script>
+  </div>
+
+
+  <div name="points" id="points" class="section">
+    <h2>points</h2>
+    <div class="points sidebyside">
+      <div class="left">
+<snippet>
+
+var lonlat = [-100, 37.7833];
+
+var xy = projection(lonlat)
+svg.append("circle")
+.attr({
+  cx: xy[0],
+  cy: xy[1],
+  r: 10
+})
+
+navigator.geolocation.getCurrentPosition(function(pos){
+  console.log(pos);
+  var coords = [pos.coords.longitude, pos.coords.latitude]
+  var xy = projection(coords)
+  svg.append("circle")
+  .attr({
+    cx: xy[0],
+    cy: xy[1],
+    r: 15,
+  }).style("stroke", "blue");
+})
+
+</snippet>
+        <div class="editor"></div>
+        <p>
+        </p>
+      </div>
+      <div class="right">
+        <svg width="100%" height=400>
+        </svg>
+      </div>
+    </div>
+    <script>
+    (function() {
+      var options = {
+        mode: 'javascript',
+        lineNumbers: true,
+        viewportMargin: Infinity,
+      }
+      var editor = d3.select(".points").select(".editor");
+      var svg = d3.select(".points svg");
+      var cm = CodeMirror(editor.node(), options);
+      Inlet(cm)
+      var snippet  = d3.select(".points").select("snippet");
+      var text = snippet.text()
+
+      // todo make this live bound
+      var projection = d3.select(".projections").select("snippet").text()
+      var graticule = d3.select(".graticule").select("snippet").text()
+      var paths = d3.select(".paths").select("snippet").text()
+
+      d3.json("../data/world110.json", function(err, world) {
+        cm.on("change", function() {
+          svg.selectAll("*").remove()
+          var value = cm.getValue();
+          try {
+              var countries = topojson.feature(world, world.objects.land);
+              eval(projection)
+              eval(graticule)
+              eval(paths)
+              eval(value);
+          } catch(e) {
+           console.log(e)
+          }
+        })
+        cm.setValue(text);
+      })
+    }())
+    </script>
+  </div>
+
+  <div name="resources" id="resources" class="section">
+    <h2>Resources</h2>
+    <p>
+      <ul>
+        <li><a target=_blank href="https://github.com/mbostock/d3/wiki/Geo-Paths">d3.geo paths API docs</a>
+        <li><a target=_blank href="https://github.com/mbostock/d3/wiki/Geo-Projections">d3.geo projections API docs</a>
+        <li><a target=_blank href="http://diveintohtml5.info/geolocation.html">Geolocation API</a>
+      </ul>
+    </p>
+  </div>
+
+  </div>
+
+  <script>
+    function matches(node, selector) {
+      var _ref;
+      if (node.matches) {
+        return node.matches(selector);
+      }
+      return ((_ref = node.parentNode) != null ? _ref.querySelector(selector) : void 0) === node;
+    };
+
+    function containingParent(node, selector) {
+      while (node) {
+        if (matches(node, selector)) {
+          return node;
+        }
+        node = node.parentNode;
+      }
+    };
+
+    d3.select(document.body).on("click", function() {
+      var target = d3.select(d3.event.target);
+      var contains = containingParent(target.node(), ".editor");
+      //TODO: figure out why this doesn't work
+      //var contains2 = containingParent(target.node(), ".ColorPicker");
+      if(!target.classed("range") && !contains) {
+        d3.selectAll(".inlet_slider").style("visibility", "hidden");
+        d3.selectAll(".ColorPicker").style("display", "none");
+      }
+    })
+    d3.selectAll("svg").attr("title", "Right click and Inspect me");
+  </script>
+
+  <a href="#">Top</a>
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-39326674-5', 'enjalot.github.io');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

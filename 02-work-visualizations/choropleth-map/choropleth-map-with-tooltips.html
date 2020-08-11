@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choropleth Map</title>
+    <!-- I need to get the CSS from work tomorrow. -->
+    <link rel="stylesheet" type="text/css" href="css/choroplethMap.css">
+    <!-- This needs to be cleaned up eventually. -->
+    <script src="js/d3.v4.min.js"></script>
+    <script src="js/d3-scale-chromatic.js"></script>
+    <script src="js/d3-scale-chromatic.min.js"></script>
+    <script src="js/topojson.js"></script> 
+    <script src="js/topojson.min.js"></script> 
+    <script src="https://d3js.org/d3-axis.v1.min.js"></script>
+
+<div class="container">
+    <div class="row">
+        <div class="chropleth-map">
+            <svg id="choropleth-map" viewBox="-80 -100 1100 720" class="d3-map-animation" preserveAspectRatio="xMidYMid meet"></svg>
+            <!--<svg id="${id}-svgkey" viewBox="650 -25 150 50" class="fade-in-slow-2 svgkey"></svg>-->
+        </div>
+        <div id="d3MapTooltip" class="col-xs-6 tooltip" style="display: none; opacity: 0; top: 0;"></div>
+    </div>
+</div>
+
+<script src="js/choroplethMap.js" charset="utf-8"></script>
+</body>
+</html>

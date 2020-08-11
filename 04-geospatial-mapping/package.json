@@ -1,0 +1,11 @@
+{
+	"name": "anonymous",
+	"private": true,
+	"version": "0.0.1",
+	"dependencies": {
+		"topojson": "^1.6.27"
+	},
+	"devDependencies": {
+		"gdal": "^0.9.9"
+	}
+}

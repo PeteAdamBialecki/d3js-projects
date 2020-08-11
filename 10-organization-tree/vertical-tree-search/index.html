@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="d3-vertical-tree.css" rel="stylesheet">
+    </link>
+    <script src="d3.v4.min.js"></script>
+    <script src="jquery.min.js"></script>
+    <link href="select2.min.css" rel="stylesheet" />
+    <script src="select2.min.js"></script>
+    <style>
+    .indented-tree-controls {
+	    width: 100%;
+	    border: 0;
+	    border-radius: 4px;
+    }
+    #block_container {
+        padding-bottom: 10px;
+    }
+    #d3TreeControls, #d3TreeLabel {
+        margin-left: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main" class="form-group input-static indented-tree">
+        <div id="block_container">
+            <div id="searchName">
+                <select id="searchNode"></select>
+            </div>
+        </div>
+        <label id="d3TreeLabel" class="control-label indented-tree-label">
+            <span>
+                Organization
+            </span>
+        </label>
+        <div id="d3TreeControls" class="controls indented-tree-controls">
+            <div id="d3OrgTreeContainer" class="indented-tree-container">
+                <svg id="indentedVerticalOrgTree" class="indented-vertical-tree"></svg>
+            </div>
+        </div>
+    </div>
+    <script src="d3-vertical-tree.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+html {
+    background: #181818;
+  }
+  
+  .land {
+    fill: #999;
+    stroke: #fff;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-width: 0.5;
+  }
+
+  .county {
+      stroke: #222;
+      stroke-width: 0.5;
+  }
+
+  .counties {
+      fill: none;
+  }
+
+  .border {
+      fill: none;
+      stroke: #fff;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+  }
+  
+  .bubble {
+      fill: rgb(42, 188, 241);
+      fill-opacity: .5;
+      stroke: #fff;
+      stroke-width: .5px;
+  }
+  
+  .bubble :hover {
+      stroke: #000;
+  }
+  
+  .legend circle {
+      fill: none;
+      stroke: #ccc;
+  }
+  
+  .legend text {
+      fill: #777;
+      font: 10px sans-serif;
+      text-anchor: middle;
+  }
+  
+/*hovercard formatting*/
+.tooltip {
+    position: absolute;
+    max-width: 400px;
+    height: auto;
+    padding: 5px;
+    background-color: #606060;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none; /* ¡MUY IMPORTANTE! */
+    font-family: sans-serif;
+    font-size:12px;
+    color: #fff;
+  }
+  
+  /*bar format inside hovercard*/
+  .y-axis path,
+  .y-axis line {
+      fill: none;
+      stroke: #fff;
+      color: #fff;
+      shape-rendering: crispEdges;
+  }
+  
+  .x-axis path, .x-axis line{
+    display:none;
+    color: #fff;
+  }
+  
+  .x-axis, .y-axis text {
+      font-family: sans-serif;
+      font-size: 10px;
+      color: #fff;
+      fill: #fff;
+  
+  }
+  .bar {
+    fill: #e5e5e5;
+  }
